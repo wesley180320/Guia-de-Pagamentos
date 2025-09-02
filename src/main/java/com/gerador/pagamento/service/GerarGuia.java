@@ -104,33 +104,55 @@ public class GerarGuia {
 
         doc.add(new Paragraph("\n"));
 
-        Paragraph pb = new Paragraph("Código de Barras:", negrito);
-        pb.setSpacingAfter(6);
-        doc.add(pb);
+        PdfPTable segundaTabela = new PdfPTable(2);
+        segundaTabela.setWidthPercentage(100);
+        segundaTabela.setSpacingAfter(6);
+
+        Paragraph pb1 = new Paragraph("Código de Barras:", negrito);
+        PdfPCell cell1 = new PdfPCell(pb1);
+        cell1.setBorder(Rectangle.NO_BORDER);
+        cell1.setHorizontalAlignment(Element.ALIGN_LEFT);
+        segundaTabela.addCell(cell1);
+
+        Paragraph pb2 = new Paragraph("QR Code:", negrito);
+        PdfPCell cell2 = new PdfPCell(pb2);
+        cell2.setBorder(Rectangle.NO_BORDER);
+        cell2.setHorizontalAlignment(Element.ALIGN_LEFT);
+        segundaTabela.addCell(cell2);
+
+        doc.add(segundaTabela);
+
+        PdfPTable tableImg = new PdfPTable(2);
+        tableImg.setWidthPercentage(100);
+        tableImg.setSpacingBefore(10);
+        tableImg.setSpacingAfter(10);
 
         try (ByteArrayOutputStream baosQr = new ByteArrayOutputStream();
              ByteArrayOutputStream baosBar = new ByteArrayOutputStream()) {
 
             ImageIO.write(barcodeImg, "PNG", baosBar);
             Image barcode = Image.getInstance(baosBar.toByteArray());
-            barcode.scaleAbsolute(100, 100);
-            doc.add(barcode);
-
-            Paragraph pixParagraph = new Paragraph("Código PIX: " + payloadPix, normal);
-            pixParagraph.setSpacingBefore(10);
-            pixParagraph.setSpacingAfter(6);
-            doc.add(pixParagraph);
-
-            Paragraph qrLabel = new Paragraph("QR Code:", negrito);
-            qrLabel.setSpacingBefore(10);
-            qrLabel.setSpacingAfter(6);
-            doc.add(qrLabel);
+            barcode.scaleAbsolute(150, 150);
+            PdfPCell cellBar = new PdfPCell(barcode);
+            cellBar.setBorder(Rectangle.NO_BORDER);
+            cellBar.setHorizontalAlignment(Element.ALIGN_CENTER);
+            tableImg.addCell(cellBar);
 
             ImageIO.write(qrImg, "PNG", baosQr);
             Image qr = Image.getInstance(baosQr.toByteArray());
             qr.scaleAbsolute(150, 150);
-            doc.add(qr);
+            PdfPCell cellQr = new PdfPCell(qr);
+            cellQr.setBorder(Rectangle.NO_BORDER);
+            cellQr.setHorizontalAlignment(Element.ALIGN_CENTER);
+            tableImg.addCell(cellQr);
+
+            doc.add(tableImg);
         }
+
+        Paragraph pixParagraph = new Paragraph("Código PIX: " + payloadPix, normal);
+        pixParagraph.setSpacingBefore(10);
+        pixParagraph.setSpacingAfter(6);
+        doc.add(pixParagraph);
 
         doc.close();
     }
