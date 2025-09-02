@@ -135,7 +135,7 @@ public class GerarGuia {
             barcode.scaleAbsolute(150, 150);
             PdfPCell cellBar = new PdfPCell(barcode);
             cellBar.setBorder(Rectangle.NO_BORDER);
-            cellBar.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cellBar.setHorizontalAlignment(Element.ALIGN_LEFT);
             tableImg.addCell(cellBar);
 
             ImageIO.write(qrImg, "PNG", baosQr);
@@ -143,7 +143,7 @@ public class GerarGuia {
             qr.scaleAbsolute(150, 150);
             PdfPCell cellQr = new PdfPCell(qr);
             cellQr.setBorder(Rectangle.NO_BORDER);
-            cellQr.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cellQr.setHorizontalAlignment(Element.ALIGN_LEFT);
             tableImg.addCell(cellQr);
 
             doc.add(tableImg);
