@@ -33,7 +33,7 @@ public class GerarGuia {
     private static final String OUTPUT_FILE = OUTPUT_FOLDER + "/guia.pdf";
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    public static void gerarGuiaPdf(
+    public static byte[] gerarGuiaPdf(
             String proprietario,
             String documento,
             String endereco,
@@ -55,7 +55,7 @@ public class GerarGuia {
             BufferedImage qr = gerarQRCode(payloadPix, 200);
             BufferedImage barcode = gerarQRCode("12345678901234567890", 400);
 
-            criarPdf(
+            byte[] pdfByte = criarPdf(
                     OUTPUT_FILE,
                     proprietario,
                     documento,
@@ -67,6 +67,8 @@ public class GerarGuia {
                     qr,
                     barcode
             );
+
+            return pdfByte;
         } catch (IOException e) {
             throw new PdfGenerationException("Erro ao salvar o PDF da guia de pagamento", e);
         } catch (WriterException e) {
@@ -78,7 +80,7 @@ public class GerarGuia {
         }
     }
 
-    private static void criarPdf(
+    private static byte[] criarPdf(
             String path,
             String proprietario,
             String documento,
@@ -92,7 +94,11 @@ public class GerarGuia {
     ) throws IOException, DocumentException {
 
         try (FileOutputStream fos = new FileOutputStream(path)) {
+
+            ByteArrayOutputStream byteArray = new ByteArrayOutputStream();
+
             Document doc = new Document(PageSize.A4, 36, 36, 36, 36);
+            PdfWriter writer = PdfWriter.getInstance(doc, byteArray);
             PdfWriter.getInstance(doc, fos);
             doc.open();
 
@@ -101,6 +107,7 @@ public class GerarGuia {
             adicionarCodigos(doc, barcodeImg, qrImg, payloadPix);
 
             doc.close();
+            return byteArray.toByteArray();
         }
     }
 

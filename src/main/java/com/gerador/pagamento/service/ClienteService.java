@@ -19,7 +19,7 @@ public class ClienteService {
     @Autowired
     private ClienteRepository clienteRepository;
 
-    public void salvarCliente(ClienteDTO clienteDTO) {
+    public byte[] salvarCliente(ClienteDTO clienteDTO) {
 
         if (clienteDTO == null) {
             throw new ClienteException("Cliente não pode ser nulo");
@@ -28,7 +28,7 @@ public class ClienteService {
         Cliente cliente = new Cliente();
 
         BeanUtils.copyProperties(clienteDTO, cliente);
-        GerarGuia.gerarGuiaPdf(
+        byte[] pdfByte = GerarGuia.gerarGuiaPdf(
                 cliente.getProprietario(),
                 cliente.getCpf(),
                 cliente.getEndereco(),
@@ -38,9 +38,14 @@ public class ClienteService {
                 cliente.getRecebedor().getNome(),
                 cliente.getRecebedor().getCidade());
 
+        if (pdfByte == null) {
+            throw new ClienteException("Erro ao gerar pdf");
+        }
+
         try {
             cliente.getRecebedor().setCliente(cliente);
             clienteRepository.save(cliente);
+            return pdfByte;
         } catch (ConstraintViolationException e) {
             throw new ClienteException("Erro ao salvar o cliente: violação de constraint", e);
         } catch (DataAccessException e) {
