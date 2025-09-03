@@ -9,8 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.IOException;
+import javax.validation.ConstraintViolationException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -20,33 +19,33 @@ public class ClienteService {
     @Autowired
     private ClienteRepository clienteRepository;
 
-    public void salvarCliente(ClienteDTO clienteDTO) throws Exception {
+    public void salvarCliente(ClienteDTO clienteDTO) {
 
         if (clienteDTO == null) {
-            throw new ClienteException("ClienteDTO não pode ser nulo");
+            throw new ClienteException("Cliente não pode ser nulo");
         }
 
-        try {
-            Cliente cliente = new Cliente();
-            BeanUtils.copyProperties(clienteDTO, cliente);
+        Cliente cliente = new Cliente();
 
-            GerarGuia.gerarGuiaPdf(
-                    cliente.getProprietario(),
-                    cliente.getCpf(),
-                    cliente.getEndereco(),
-                    new BigDecimal(String.valueOf(clienteDTO.getValor())),
-                    LocalDate.now().plusDays(5),
-                    "chave-pix-exemplo",
-                    cliente.getRecebedor().getNome(),
-                    cliente.getRecebedor().getCidade()
-            );
+        BeanUtils.copyProperties(clienteDTO, cliente);
+        GerarGuia.gerarGuiaPdf(
+                cliente.getProprietario(),
+                cliente.getCpf(),
+                cliente.getEndereco(),
+                new BigDecimal(String.valueOf(clienteDTO.getValor())),
+                LocalDate.now().plusDays(5),
+                "chave-pix-exemplo",
+                cliente.getRecebedor().getNome(),
+                cliente.getRecebedor().getCidade());
+
+        try {
             clienteRepository.save(cliente);
-        } catch (IOException e) {
-            throw new ClienteException("Erro ao gerar o PDF da guia de pagamento", e);
+        } catch (ConstraintViolationException e) {
+            throw new ClienteException("Erro ao salvar o cliente: violação de constraint", e);
         } catch (DataAccessException e) {
             throw new ClienteException("Erro ao salvar o cliente no banco de dados", e);
         } catch (Exception e) {
-            throw new ClienteException("Erro inesperado ao salvar cliente", e);
+            throw new ClienteException("Erro inesperado ao salvar o cliente", e);
         }
     }
 }

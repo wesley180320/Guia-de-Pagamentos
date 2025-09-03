@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class GlobalException {
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Object> handleValidationExceptions(MethodArgumentNotValidException ex) {
+    public ResponseEntity<Object> validationExceptions(MethodArgumentNotValidException ex) {
 
         Map<String, String> errors = ex.getBindingResult()
                 .getFieldErrors()
@@ -30,7 +30,7 @@ public class GlobalException {
     }
 
     @ExceptionHandler(ClienteException.class)
-    public ResponseEntity<Map<String, Object>> handleClienteException(ClienteException ex) {
+    public ResponseEntity<Map<String, Object>> clienteException(ClienteException ex) {
         Map<String, Object> body = new HashMap<>();
         body.put("status", HttpStatus.BAD_REQUEST.value());
         body.put("errors", ex.getMessage());
@@ -38,10 +38,11 @@ public class GlobalException {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
+    public ResponseEntity<Map<String, Object>> genericException(Exception ex) {
         Map<String, Object> body = new HashMap<>();
         body.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
         body.put("errors", ex.getMessage());
-        return ResponseEntity.status(500).body(body);
+        return ResponseEntity.internalServerError().body(body);
     }
+
 }

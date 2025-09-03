@@ -4,6 +4,7 @@ import Util.CPFUtils;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
@@ -17,6 +18,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -26,7 +28,10 @@ import java.util.Map;
 
 public class GerarGuia {
 
-    private static final String txid = "TX1234567890";
+    private static final String TXID = "TX1234567890";
+    private static final String OUTPUT_FOLDER = "pdfs";
+    private static final String OUTPUT_FILE = OUTPUT_FOLDER + "/guia.pdf";
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     public static void gerarGuiaPdf(
             String proprietario,
@@ -37,20 +42,40 @@ public class GerarGuia {
             String chavePix,
             String nomeRecebedor,
             String cidadeRecebedor
-    ) throws Exception {
-        String pastaProjeto = "pdfs";
-        File dir = new File(pastaProjeto);
-        if (!dir.exists()) {
-            dir.mkdirs();
+    ) {
+        try {
+            File dir = new File(OUTPUT_FOLDER);
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+
+            documento = CPFUtils.formatarCPF(documento);
+
+            String payloadPix = gerarPayloadPix(chavePix, nomeRecebedor, cidadeRecebedor, valor);
+            BufferedImage qr = gerarQRCode(payloadPix, 200);
+            BufferedImage barcode = gerarQRCode("12345678901234567890", 400);
+
+            criarPdf(
+                    OUTPUT_FILE,
+                    proprietario,
+                    documento,
+                    endereco,
+                    valor,
+                    vencimento,
+                    "12345678901234567890",
+                    payloadPix,
+                    qr,
+                    barcode
+            );
+        } catch (IOException e) {
+            throw new PdfGenerationException("Erro ao salvar o PDF da guia de pagamento", e);
+        } catch (WriterException e) {
+            throw new QRCodeGenerationException("Erro ao gerar o QR Code", e);
+        } catch (DocumentException e) {
+            throw new PdfGenerationException("Erro ao escrever no documento PDF", e);
+        } catch (Exception e) {
+            throw new PdfGenerationException("Erro inesperado ao gerar a guia", e);
         }
-        String caminho = pastaProjeto + "/guia.pdf";
-        BufferedImage qr = gerarQRCode(gerarPayloadPix(chavePix, nomeRecebedor, cidadeRecebedor, valor), 200);
-        BufferedImage barcode = gerarQRCode("12345678901234567890", 400);
-        documento = CPFUtils.formatarCPF(documento);
-        criarPdf(caminho, proprietario, documento, endereco, valor, vencimento,
-                "12345678901234567890",
-                gerarPayloadPix(chavePix, nomeRecebedor, cidadeRecebedor, valor),
-                qr, barcode);
     }
 
     private static void criarPdf(
@@ -64,26 +89,42 @@ public class GerarGuia {
             String payloadPix,
             BufferedImage qrImg,
             BufferedImage barcodeImg
-    ) throws Exception {
-        Document doc = new Document(PageSize.A4, 36, 36, 36, 36);
-        PdfWriter.getInstance(doc, new FileOutputStream(path));
-        doc.open();
+    ) throws IOException, DocumentException {
 
+        try (FileOutputStream fos = new FileOutputStream(path)) {
+            Document doc = new Document(PageSize.A4, 36, 36, 36, 36);
+            PdfWriter.getInstance(doc, fos);
+            doc.open();
 
+            adicionarCabecalho(doc);
+            adicionarInfoPrincipal(doc, proprietario, documento, endereco, valor, vencimento);
+            adicionarCodigos(doc, barcodeImg, qrImg, payloadPix);
+
+            doc.close();
+        }
+    }
+
+    private static void adicionarCabecalho(Document doc) throws DocumentException {
         Font titulo = new Font(Font.HELVETICA, 16, Font.BOLD);
-        Font normal = new Font(Font.HELVETICA, 11, Font.ITALIC);
-        Font negrito = new Font(Font.HELVETICA, 11, Font.BOLD);
-
         Paragraph pTitulo = new Paragraph("GUIA DE PAGAMENTO (FICTÍCIA)", titulo);
         pTitulo.setAlignment(Element.ALIGN_CENTER);
         pTitulo.setSpacingAfter(12);
         doc.add(pTitulo);
+    }
 
+    private static void adicionarInfoPrincipal(Document doc,
+                                               String proprietario,
+                                               String documento,
+                                               String endereco,
+                                               BigDecimal valor,
+                                               LocalDate vencimento) throws DocumentException {
+
+        Font normal = new Font(Font.HELVETICA, 11, Font.ITALIC);
+        Font negrito = new Font(Font.HELVETICA, 11, Font.BOLD);
 
         PdfPTable table = new PdfPTable(2);
         table.setWidthPercentage(100);
         table.setWidths(new float[]{60, 40});
-
 
         PdfPCell c1 = new PdfPCell();
         c1.setPadding(8);
@@ -92,33 +133,30 @@ public class GerarGuia {
         c1.addElement(new Paragraph("Endereço: " + endereco, normal));
         table.addCell(c1);
 
-
         PdfPCell c2 = new PdfPCell();
         c2.setPadding(8);
-        DateTimeFormatter df = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        c2.addElement(new Paragraph("Vencimento: " + df.format(vencimento), negrito));
+        c2.addElement(new Paragraph("Vencimento: " + DATE_FORMAT.format(vencimento), negrito));
         c2.addElement(new Paragraph("Valor: R$ " + valor.toPlainString(), negrito));
         table.addCell(c2);
 
         doc.add(table);
-
         doc.add(new Paragraph("\n"));
+    }
+
+    private static void adicionarCodigos(Document doc,
+                                         BufferedImage barcodeImg,
+                                         BufferedImage qrImg,
+                                         String payloadPix) throws IOException, DocumentException {
+
+        Font negrito = new Font(Font.HELVETICA, 11, Font.BOLD);
+        Font normal = new Font(Font.HELVETICA, 11, Font.ITALIC);
 
         PdfPTable segundaTabela = new PdfPTable(2);
         segundaTabela.setWidthPercentage(100);
         segundaTabela.setSpacingAfter(6);
 
-        Paragraph pb1 = new Paragraph("Código de Barras:", negrito);
-        PdfPCell cell1 = new PdfPCell(pb1);
-        cell1.setBorder(Rectangle.NO_BORDER);
-        cell1.setHorizontalAlignment(Element.ALIGN_LEFT);
-        segundaTabela.addCell(cell1);
-
-        Paragraph pb2 = new Paragraph("QR Code:", negrito);
-        PdfPCell cell2 = new PdfPCell(pb2);
-        cell2.setBorder(Rectangle.NO_BORDER);
-        cell2.setHorizontalAlignment(Element.ALIGN_LEFT);
-        segundaTabela.addCell(cell2);
+        segundaTabela.addCell(criarCelulaTexto("Código de Barras:", negrito));
+        segundaTabela.addCell(criarCelulaTexto("QR Code:", negrito));
 
         doc.add(segundaTabela);
 
@@ -127,38 +165,38 @@ public class GerarGuia {
         tableImg.setSpacingBefore(10);
         tableImg.setSpacingAfter(10);
 
-        try (ByteArrayOutputStream baosQr = new ByteArrayOutputStream();
-             ByteArrayOutputStream baosBar = new ByteArrayOutputStream()) {
+        tableImg.addCell(criarCelulaImagem(barcodeImg));
+        tableImg.addCell(criarCelulaImagem(qrImg));
 
-            ImageIO.write(barcodeImg, "PNG", baosBar);
-            Image barcode = Image.getInstance(baosBar.toByteArray());
-            barcode.scaleAbsolute(150, 150);
-            PdfPCell cellBar = new PdfPCell(barcode);
-            cellBar.setBorder(Rectangle.NO_BORDER);
-            cellBar.setHorizontalAlignment(Element.ALIGN_LEFT);
-            tableImg.addCell(cellBar);
-
-            ImageIO.write(qrImg, "PNG", baosQr);
-            Image qr = Image.getInstance(baosQr.toByteArray());
-            qr.scaleAbsolute(150, 150);
-            PdfPCell cellQr = new PdfPCell(qr);
-            cellQr.setBorder(Rectangle.NO_BORDER);
-            cellQr.setHorizontalAlignment(Element.ALIGN_LEFT);
-            tableImg.addCell(cellQr);
-
-            doc.add(tableImg);
-        }
+        doc.add(tableImg);
 
         Paragraph pixParagraph = new Paragraph("Código PIX: " + payloadPix, normal);
         pixParagraph.setSpacingBefore(10);
         pixParagraph.setSpacingAfter(6);
         doc.add(pixParagraph);
+    }
 
-        doc.close();
+    private static PdfPCell criarCelulaTexto(String texto, Font fonte) {
+        PdfPCell cell = new PdfPCell(new Paragraph(texto, fonte));
+        cell.setBorder(Rectangle.NO_BORDER);
+        cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+        return cell;
+    }
+
+    private static PdfPCell criarCelulaImagem(BufferedImage img) throws IOException, BadElementException {
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            ImageIO.write(img, "PNG", baos);
+            Image image = Image.getInstance(baos.toByteArray());
+            image.scaleAbsolute(150, 150);
+
+            PdfPCell cell = new PdfPCell(image);
+            cell.setBorder(Rectangle.NO_BORDER);
+            cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+            return cell;
+        }
     }
 
     public static String gerarPayloadPix(String chave, String nomeRecebedor, String cidade, BigDecimal valor) {
-
         String payloadFormatIndicator = tlv("00", "01");
         String pointOfInitiation = tlv("01", "12");
         String gui = tlv("00", "br.gov.bcb.pix");
@@ -170,11 +208,11 @@ public class GerarGuia {
         String countryCode = tlv("58", "BR");
         String merchantName = tlv("59", limitar(nomeRecebedor, 25));
         String merchantCity = tlv("60", limitar(cidade, 15));
-        String addDataField = tlv("62", tlv("05", limitar(txid, 25))); // TXID
+        String addDataField = tlv("62", tlv("05", limitar(TXID, 25))); // TXID
 
-        String semCRC = payloadFormatIndicator + pointOfInitiation + mai + merchantCategoryCode +
-                transactionCurrency + transactionAmount + countryCode + merchantName + merchantCity + addDataField +
-                "6304";
+        String semCRC = payloadFormatIndicator + pointOfInitiation + mai +
+                merchantCategoryCode + transactionCurrency + transactionAmount +
+                countryCode + merchantName + merchantCity + addDataField + "6304";
 
         String crc = crc16(semCRC).toUpperCase();
         return semCRC + crc;
@@ -203,7 +241,7 @@ public class GerarGuia {
         return String.format("%04X", result);
     }
 
-    private static BufferedImage gerarQRCode(String content, int size) throws Exception {
+    private static BufferedImage gerarQRCode(String content, int size) throws WriterException {
         Map<EncodeHintType, Object> hints = new EnumMap<>(EncodeHintType.class);
         hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
         hints.put(EncodeHintType.MARGIN, 1);
@@ -217,8 +255,19 @@ public class GerarGuia {
 
     private static String limitar(String s, int max) {
         if (s == null) return "";
-        if (s.length() <= max) return s;
-        return s.substring(0, max);
+        return (s.length() <= max) ? s : s.substring(0, max);
+    }
+
+    public static class PdfGenerationException extends RuntimeException {
+        public PdfGenerationException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+
+    public static class QRCodeGenerationException extends RuntimeException {
+        public QRCodeGenerationException(String message, Throwable cause) {
+            super(message, cause);
+        }
     }
 
 }
