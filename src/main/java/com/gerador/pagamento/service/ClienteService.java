@@ -39,6 +39,7 @@ public class ClienteService {
                 cliente.getRecebedor().getCidade());
 
         try {
+            cliente.getRecebedor().setCliente(cliente);
             clienteRepository.save(cliente);
         } catch (ConstraintViolationException e) {
             throw new ClienteException("Erro ao salvar o cliente: violação de constraint", e);
