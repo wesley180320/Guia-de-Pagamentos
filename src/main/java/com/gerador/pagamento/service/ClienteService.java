@@ -34,7 +34,7 @@ public class ClienteService {
                     cliente.getProprietario(),
                     cliente.getCpf(),
                     cliente.getEndereco(),
-                    new BigDecimal("150.00"),
+                    new BigDecimal(String.valueOf(clienteDTO.getValor())),
                     LocalDate.now().plusDays(5),
                     "chave-pix-exemplo",
                     cliente.getRecebedor().getNome(),
