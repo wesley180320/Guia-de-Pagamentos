@@ -36,7 +36,7 @@ public class ClienteService {
         clienteLogado.getRecebedor().setCidade(clienteDTO.getRecebedor().getCidade());
         clienteLogado.getRecebedor().setNome(clienteDTO.getRecebedor().getNome());
 
-        BeanUtils.copyProperties(clienteDTO, clienteLogado, "idCliente", "recebedor");
+        BeanUtils.copyProperties(clienteDTO, clienteLogado, "idCliente", "recebedor", "cpf");
         byte[] pdfByte = GerarGuia.gerarGuiaPdf(
                 clienteLogado.getProprietario(),
                 clienteLogado.getCpf(),

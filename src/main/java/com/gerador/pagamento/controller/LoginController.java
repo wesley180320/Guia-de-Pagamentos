@@ -1,6 +1,5 @@
 package com.gerador.pagamento.controller;
 
-import com.gerador.pagamento.DTO.ClienteDTO;
 import com.gerador.pagamento.DTO.LoginDTO;
 import com.gerador.pagamento.DTO.LoginResponseDTO;
 import com.gerador.pagamento.model.Cliente;
@@ -16,7 +15,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Map;
 
 @RestController
 @RequestMapping(value = "auth")

@@ -43,6 +43,7 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/auth/login", "POST")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/h2-console/**", "GET")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/h2-console/**", "POST")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/pagamento/**", "POST")).authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
@@ -65,9 +66,9 @@ public class SecurityConfig {
         List<String> listaAcesso = Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS");
 
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(Collections.singletonList("http://127.0.0.1:5500"));
+        config.setAllowedOrigins(Arrays.asList("http://127.0.0.1:5500"));
         config.setAllowedMethods(listaAcesso);
-        config.setAllowedHeaders(Collections.singletonList("*"));
+        config.setAllowedHeaders(Arrays.asList("*"));
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

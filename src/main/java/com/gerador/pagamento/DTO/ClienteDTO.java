@@ -12,7 +12,6 @@ public class ClienteDTO {
     @NotBlank(message = "Proprietário é obrigatório")
     private String proprietario;
     @CPF(message = "CPF inválido")
-    @NotBlank(message = "CPF é obrigatório")
     private String cpf;
     @NotBlank(message = "Endereço é obrigatório")
     private String endereco;
