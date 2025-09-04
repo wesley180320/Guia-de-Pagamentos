@@ -8,28 +8,28 @@ public class Recebedor {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id_recebedor", nullable = false)
-    private UUID idRecebedor;
+    private Long idRecebedor;
     private String chavePix;
     private String nome;
     private String cidade;
-    @OneToOne
-    @JoinColumn(name = "cliente_id", referencedColumnName = "id_cliente")
+
+    @OneToOne(mappedBy = "recebedor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Cliente cliente;
 
     public Recebedor(){}
 
-    public Recebedor(UUID idRecebedor, String chavePix, String nome, String cidade) {
+    public Recebedor(Long idRecebedor, String chavePix, String nome, String cidade) {
         this.idRecebedor = idRecebedor;
         this.chavePix = chavePix;
         this.nome = nome;
         this.cidade = cidade;
     }
 
-    public UUID getIdRecebedor() {
+    public Long getIdRecebedor() {
         return idRecebedor;
     }
 
-    public void setIdRecebedor(UUID idRecebedor) {
+    public void setIdRecebedor(Long idRecebedor) {
         this.idRecebedor = idRecebedor;
     }
 
