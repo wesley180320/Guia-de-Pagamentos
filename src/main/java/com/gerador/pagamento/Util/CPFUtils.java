@@ -1,4 +1,4 @@
-package Util;
+package com.gerador.pagamento.Util;
 
 public class CPFUtils {
     public static String formatarCPF(String cpf) {
