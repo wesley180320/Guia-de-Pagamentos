@@ -1,6 +1,6 @@
 package com.gerador.pagamento.service;
 
-import Util.CPFUtils;
+import com.gerador.pagamento.Util.CPFUtils;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
