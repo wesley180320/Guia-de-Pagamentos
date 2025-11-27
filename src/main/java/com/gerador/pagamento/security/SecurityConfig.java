@@ -1,5 +1,6 @@
 package com.gerador.pagamento.security;
 
+import com.gerador.pagamento.enums.MetodoHttp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,7 +25,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig {
+public class  SecurityConfig {
 
     @Autowired
     SecurityFilter securityFilter;
@@ -63,10 +64,12 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        List<String> listaAcesso = Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS");
+        List<String> listaAcesso = Arrays.asList(MetodoHttp.GET.getNome(), MetodoHttp.POST.getNome(), MetodoHttp.PUT.getNome(), MetodoHttp.DELETE.getNome());
+
+        String ipFront = System.getenv("IPFRONT");
 
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(Arrays.asList("http://127.0.0.1:5500"));
+        config.setAllowedOrigins(Arrays.asList(ipFront));
         config.setAllowedMethods(listaAcesso);
         config.setAllowedHeaders(Arrays.asList("*"));
         config.setAllowCredentials(true);
