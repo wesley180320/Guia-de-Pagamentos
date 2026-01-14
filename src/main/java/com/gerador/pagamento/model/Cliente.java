@@ -6,7 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Collection;
-import java.util.UUID;
+import java.util.Date;
 
 @Entity
 public class Cliente implements UserDetails {
@@ -14,11 +14,12 @@ public class Cliente implements UserDetails {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id_cliente", nullable = false)
     private Long idCliente;
-    private String proprietario;
+    private String nome;
     private String cpf;
     private String endereco;
-    private BigDecimal valor;
     private String senha;
+    private String email;
+    private Date dataNascimento;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "recebedor_id", referencedColumnName = "id_recebedor")
@@ -26,12 +27,13 @@ public class Cliente implements UserDetails {
 
     public Cliente(){}
 
-    public Cliente(Long idCliente, String proprietario, String cpf, String endereco, BigDecimal valor) {
+    public Cliente(Long idCliente, String nome, String cpf, String endereco, String email, Date dataNascimento) {
         this.idCliente = idCliente;
-        this.proprietario = proprietario;
+        this.nome = nome;
         this.cpf = cpf;
         this.endereco = endereco;
-        this.valor = valor;
+        this.dataNascimento = dataNascimento;
+        this.email = email;
     }
 
     public Long getIdCliente() {
@@ -42,12 +44,12 @@ public class Cliente implements UserDetails {
         this.idCliente = idCliente;
     }
 
-    public String getProprietario() {
-        return proprietario;
+    public String getNome() {
+        return nome;
     }
 
-    public void setProprietario(String proprietario) {
-        this.proprietario = proprietario;
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 
     public String getCpf() {
@@ -66,14 +68,6 @@ public class Cliente implements UserDetails {
         this.endereco = endereco;
     }
 
-    public BigDecimal getValor() {
-        return valor;
-    }
-
-    public void setValor(BigDecimal valor) {
-        this.valor = valor;
-    }
-
     public Recebedor getRecebedor() {
         return recebedor;
     }
@@ -88,6 +82,22 @@ public class Cliente implements UserDetails {
 
     public void setSenha(String senha) {
         this.senha = senha;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Date getDataNascimento() {
+        return dataNascimento;
+    }
+
+    public void setDataNascimento(Date dataNascimento) {
+        this.dataNascimento = dataNascimento;
     }
 
     @Override
