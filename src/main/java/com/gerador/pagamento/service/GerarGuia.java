@@ -1,6 +1,6 @@
 package com.gerador.pagamento.service;
 
-import com.gerador.pagamento.Util.CPFUtils;
+import com.gerador.pagamento.util.CPFUtils;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
@@ -34,7 +34,7 @@ public class GerarGuia {
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     public static byte[] gerarGuiaPdf(
-            String proprietario,
+            String cpf,
             String documento,
             String endereco,
             BigDecimal valor,
@@ -57,7 +57,7 @@ public class GerarGuia {
 
             byte[] pdfByte = criarPdf(
                     OUTPUT_FILE,
-                    proprietario,
+                    cpf,
                     documento,
                     endereco,
                     valor,
@@ -82,7 +82,7 @@ public class GerarGuia {
 
     private static byte[] criarPdf(
             String path,
-            String proprietario,
+            String cpf,
             String documento,
             String endereco,
             BigDecimal valor,
@@ -103,7 +103,7 @@ public class GerarGuia {
             doc.open();
 
             adicionarCabecalho(doc);
-            adicionarInfoPrincipal(doc, proprietario, documento, endereco, valor, vencimento);
+            adicionarInfoPrincipal(doc, cpf, documento, endereco, valor, vencimento);
             adicionarCodigos(doc, barcodeImg, qrImg, payloadPix);
 
             doc.close();
@@ -120,7 +120,7 @@ public class GerarGuia {
     }
 
     private static void adicionarInfoPrincipal(Document doc,
-                                               String proprietario,
+                                               String cpf,
                                                String documento,
                                                String endereco,
                                                BigDecimal valor,
@@ -135,7 +135,7 @@ public class GerarGuia {
 
         PdfPCell c1 = new PdfPCell();
         c1.setPadding(8);
-        c1.addElement(new Paragraph("Proprietário: " + proprietario, normal));
+        c1.addElement(new Paragraph("Proprietário: " + cpf, normal));
         c1.addElement(new Paragraph("Documento: " + documento, normal));
         c1.addElement(new Paragraph("Endereço: " + endereco, normal));
         table.addCell(c1);
@@ -203,27 +203,33 @@ public class GerarGuia {
         }
     }
 
-    public static String gerarPayloadPix(String chave, String nomeRecebedor, String cidade, BigDecimal valor) {
-        String payloadFormatIndicator = tlv("00", "01");
-        String pointOfInitiation = tlv("01", "12");
+    public static String gerarPayloadPix(
+            String chave,
+            String nome,
+            String cidade,
+            BigDecimal valor) {
+
         String gui = tlv("00", "br.gov.bcb.pix");
         String chaveField = tlv("01", chave);
-        String mai = tlv("26", gui + chaveField);
-        String merchantCategoryCode = tlv("52", "0000");
-        String transactionCurrency = tlv("53", "986"); // BRL
-        String transactionAmount = tlv("54", formatarValor(valor));
-        String countryCode = tlv("58", "BR");
-        String merchantName = tlv("59", limitar(nomeRecebedor, 25));
-        String merchantCity = tlv("60", limitar(cidade, 15));
-        String addDataField = tlv("62", tlv("05", limitar(TXID, 25))); // TXID
 
-        String semCRC = payloadFormatIndicator + pointOfInitiation + mai +
-                merchantCategoryCode + transactionCurrency + transactionAmount +
-                countryCode + merchantName + merchantCity + addDataField + "6304";
+        String mai = "26" + String.format("%02d", (gui + chaveField).length()) + gui + chaveField;
 
-        String crc = crc16(semCRC).toUpperCase();
-        return semCRC + crc;
+        String payload =
+                tlv("00", "01") +
+                        tlv("01", "12") +
+                        mai +
+                        tlv("52", "0000") +
+                        tlv("53", "986") +
+                        tlv("54", formatarValor(valor)) +
+                        tlv("58", "BR") +
+                        tlv("59", limitar(nome, 25)) +
+                        tlv("60", limitar(cidade, 15)) +
+                        "6304";
+
+        String crc = crc16(payload);
+        return payload + crc;
     }
+
 
     private static String tlv(String id, String value) {
         String len = String.format("%02d", value.getBytes(StandardCharsets.UTF_8).length);
