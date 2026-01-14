@@ -1,5 +1,6 @@
 package com.gerador.pagamento.exception;
 
+import com.gerador.pagamento.util.RequisicaoUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -14,35 +15,17 @@ import java.util.stream.Collectors;
 public class GlobalException {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> validationExceptions(MethodArgumentNotValidException ex) {
-
-        Map<String, String> errors = ex.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .collect(Collectors.toMap(
-                        error -> error.getField(),
-                        error -> error.getDefaultMessage()
-                ));
-        Map<String, Object> body = new HashMap<>();
-        body.put("status", HttpStatus.BAD_REQUEST.value());
-        body.put("errors", errors);
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+        return new RequisicaoUtils().retornoRequisicao(HttpStatus.BAD_REQUEST, ex.getFieldError().getDefaultMessage());
     }
 
     @ExceptionHandler(ClienteException.class)
     public ResponseEntity<Map<String, Object>> clienteException(ClienteException ex) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("status", HttpStatus.BAD_REQUEST.value());
-        body.put("errors", ex.getMessage());
-        return ResponseEntity.badRequest().body(body);
+        return new RequisicaoUtils().retornoRequisicao(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> genericException(Exception ex) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-        body.put("errors", ex.getMessage());
-        return ResponseEntity.internalServerError().body(body);
+        return new RequisicaoUtils().retornoRequisicao(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
     }
 
 }
