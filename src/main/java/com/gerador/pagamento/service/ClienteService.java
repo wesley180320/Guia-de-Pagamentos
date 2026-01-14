@@ -1,7 +1,7 @@
 package com.gerador.pagamento.service;
 
-import com.gerador.pagamento.DTO.ClienteDTO;
 import com.gerador.pagamento.DTO.LoginDTO;
+import com.gerador.pagamento.DTO.PagamentoDTO;
 import com.gerador.pagamento.exception.ClienteException;
 import com.gerador.pagamento.model.Cliente;
 import com.gerador.pagamento.model.Recebedor;
@@ -25,23 +25,18 @@ public class ClienteService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public byte[] gerarPdf(ClienteDTO clienteDTO, Cliente cliente) {
+    public byte[] gerarPdf(PagamentoDTO pagamentoDTO, Cliente cliente) {
 
-        Cliente clienteLogado = (Cliente) clienteRepository.findByClienteComRecebedor(cliente.getCpf());
+        Cliente clienteLogado = validarClienteLogado(cliente);
 
-        if (clienteDTO == null || clienteLogado == null) {
-            throw new ClienteException("Cliente não pode ser nulo");
-        }
+        clienteLogado.getRecebedor().setCidade(pagamentoDTO.getRecebedor().getCidade());
+        clienteLogado.getRecebedor().setNome(pagamentoDTO.getRecebedor().getNome());
 
-        clienteLogado.getRecebedor().setCidade(clienteDTO.getRecebedor().getCidade());
-        clienteLogado.getRecebedor().setNome(clienteDTO.getRecebedor().getNome());
-
-        BeanUtils.copyProperties(clienteDTO, clienteLogado, "idCliente", "recebedor", "cpf");
         byte[] pdfByte = GerarGuia.gerarGuiaPdf(
-                clienteLogado.getProprietario(),
+                pagamentoDTO.getRecebedor().getNome(),
                 clienteLogado.getCpf(),
                 clienteLogado.getEndereco(),
-                new BigDecimal(String.valueOf(clienteLogado.getValor())),
+                new BigDecimal(String.valueOf(pagamentoDTO.getRecebedor().getValor())),
                 LocalDate.now().plusDays(5),
                 "chave-pix-exemplo",
                 clienteLogado.getRecebedor().getNome(),
@@ -64,11 +59,8 @@ public class ClienteService {
         }
     }
 
-    public void salvarCliente(LoginDTO loginDTO){
-        Cliente clienteExistente = (Cliente) clienteRepository.findByCpf(loginDTO.getCpf());
-        if(clienteExistente != null){
-            throw new ClienteException("Erro ao salvar o cliente: CPF já existe");
-        }
+    public void salvarCliente(LoginDTO loginDTO) {
+        validarCliente(loginDTO);
         Cliente cliente = new Cliente();
         loginDTO.setSenha(passwordEncoder.encode(loginDTO.getSenha()));
         BeanUtils.copyProperties(loginDTO, cliente);
@@ -77,4 +69,18 @@ public class ClienteService {
         clienteRepository.save(cliente);
     }
 
+    private void validarCliente(LoginDTO loginDTO) {
+        Cliente clienteExistente = (Cliente) clienteRepository.findByCpf(loginDTO.getCpf());
+        if (clienteExistente != null) {
+            throw new ClienteException("Erro ao salvar o cliente: CPF já existe");
+        }
+    }
+
+    private Cliente validarClienteLogado(Cliente cliente) {
+        Cliente clienteLogado = clienteRepository.findByClienteComRecebedor(cliente.getCpf());
+        if (clienteLogado == null) {
+            throw new ClienteException("Cliente não pode ser nulo");
+        }
+        return clienteLogado;
+    }
 }
