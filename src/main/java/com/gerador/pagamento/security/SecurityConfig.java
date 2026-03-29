@@ -42,8 +42,11 @@ public class  SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(new AntPathRequestMatcher("/auth/cadastro", "POST")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/auth/login", "POST")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/auth/login", "POST")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/h2-console/**", "GET")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/h2-console/**", "POST")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/swagger-ui.html", "GET")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/v3/api-docs/**", "GET")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/swagger-ui/**", "GET")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/pagamento/**", "POST")).authenticated()
                         .anyRequest().authenticated()
                 )
