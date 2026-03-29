@@ -1,4 +1,4 @@
-package com.gerador.pagamento.util;
+package com.gerador.pagamento.Util;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

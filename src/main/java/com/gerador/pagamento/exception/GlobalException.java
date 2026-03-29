@@ -1,6 +1,6 @@
 package com.gerador.pagamento.exception;
 
-import com.gerador.pagamento.util.RequisicaoUtils;
+import com.gerador.pagamento.Util.RequisicaoUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
