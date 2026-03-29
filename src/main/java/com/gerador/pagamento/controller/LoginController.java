@@ -28,7 +28,7 @@ public class LoginController {
     TokenService tokenService;
 
     @RequestMapping(value = "/cadastro", method = RequestMethod.POST)
-    private ResponseEntity<Object> save(@RequestBody @Valid LoginDTO loginDTO, BindingResult result) {
+    private ResponseEntity<Object> save(@RequestBody @Valid LoginDTO loginDTO) {
         clienteService.salvarCliente(loginDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
