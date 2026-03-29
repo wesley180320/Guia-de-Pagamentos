@@ -28,15 +28,16 @@ public class ClienteService {
     public byte[] gerarPdf(PagamentoDTO pagamentoDTO, Cliente cliente) {
 
         Cliente clienteLogado = validarClienteLogado(cliente);
-
-        clienteLogado.getRecebedor().setCidade(pagamentoDTO.getRecebedor().getCidade());
-        clienteLogado.getRecebedor().setNome(pagamentoDTO.getRecebedor().getNome());
+        Recebedor recebedor = new Recebedor();
+        BeanUtils.copyProperties(pagamentoDTO, recebedor);
+        clienteLogado.getRecebedor().setCidade(recebedor.getCidade());
+        clienteLogado.getRecebedor().setNome(recebedor.getNome());
 
         byte[] pdfByte = GerarGuia.gerarGuiaPdf(
-                pagamentoDTO.getRecebedor().getNome(),
+                recebedor.getNome(),
                 clienteLogado.getCpf(),
                 clienteLogado.getEndereco(),
-                new BigDecimal(String.valueOf(pagamentoDTO.getRecebedor().getValor())),
+                new BigDecimal(String.valueOf(recebedor.getValor())),
                 LocalDate.now().plusDays(5),
                 "chave-pix-exemplo",
                 clienteLogado.getRecebedor().getNome(),
