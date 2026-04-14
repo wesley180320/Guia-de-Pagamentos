@@ -5,8 +5,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 public class Cliente implements UserDetails {
@@ -24,6 +26,9 @@ public class Cliente implements UserDetails {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "recebedor_id", referencedColumnName = "id_recebedor")
     private Recebedor recebedor;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "cliente")
+    private List<Boleto> boletos = new ArrayList<>();
 
     public Cliente(){}
 
@@ -98,6 +103,14 @@ public class Cliente implements UserDetails {
 
     public void setDataNascimento(Date dataNascimento) {
         this.dataNascimento = dataNascimento;
+    }
+
+    public List<Boleto> getBoletos() {
+        return boletos;
+    }
+
+    public void setBoletos(List<Boleto> boletos) {
+        this.boletos = boletos;
     }
 
     @Override
