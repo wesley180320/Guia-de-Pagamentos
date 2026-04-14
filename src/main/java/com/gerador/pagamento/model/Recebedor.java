@@ -6,12 +6,13 @@ import java.util.UUID;
 @Entity
 public class Recebedor {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id_recebedor", nullable = false)
     private Long idRecebedor;
     private String chavePix;
     private String nome;
     private String cidade;
+    private Long  valor;
 
     @OneToOne(mappedBy = "recebedor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Cliente cliente;
@@ -63,5 +64,13 @@ public class Recebedor {
 
     public void setCliente(Cliente cliente) {
         this.cliente = cliente;
+    }
+
+    public Long getValor() {
+        return valor;
+    }
+
+    public void setValor(Long valor) {
+        this.valor = valor;
     }
 }
