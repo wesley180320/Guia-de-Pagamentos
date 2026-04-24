@@ -19,16 +19,16 @@ public class Boleto {
     private Cliente cliente;
     @Lob
     @Column(name = "boleto", columnDefinition = "BLOB")
-    private byte[] boleto;
+    private byte[] boletoByte;
 
     public Boleto() {
     }
 
-    public Boleto(Long idBoleto, Date dataCriacao, Cliente cliente, byte[] boleto) {
+    public Boleto(Long idBoleto, Date dataCriacao, Cliente cliente, byte[] boletoByte) {
         this.idBoleto = idBoleto;
-        this.dataCriacao = new Date();
+        this.dataCriacao = dataCriacao;
         this.cliente = cliente;
-        this.boleto = boleto;
+        this.boletoByte = boletoByte;
     }
 
     public Long getIdBoleto() {
@@ -55,11 +55,11 @@ public class Boleto {
         this.cliente = cliente;
     }
 
-    public byte[] getBoleto() {
-        return boleto;
+    public byte[] getBoletoByte() {
+        return boletoByte;
     }
 
-    public void setBoleto(byte[] boleto) {
-        this.boleto = boleto;
+    public void setBoletoByte(byte[] boletoByte) {
+        this.boletoByte = boletoByte;
     }
 }
