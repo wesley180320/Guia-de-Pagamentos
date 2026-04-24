@@ -11,29 +11,28 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class BoletoServiceImpl implements BoletoService<Boleto> {
+public class BoletoServiceImpl implements BoletoService {
 
     @Autowired
     private BoletoRepository boletoRepository;
 
     @Override
-    public Page<Boleto> buscaBoletoPorIdCliente(Long idCliente, Pageable pageable) {
+    public Page<Boleto> buscaPaginadaPorId(Long idCliente, Pageable pageable) {
         return boletoRepository.findByClienteIdCliente(idCliente, pageable);
     }
 
     @Transactional
     @Override
-    public void salvarBoleto(byte[] pdfByte, Boleto boleto) {
-        if (pdfByte == null) {
+    public void salvar(Boleto boleto) {
+        if (boleto.getBoletoByte() == null) {
             throw new ClienteException("Erro pdfBoleto nullo");
         }
-        boleto.setBoleto(pdfByte);
         boletoRepository.save(boleto);
     }
 
     @Override
-    public void deletar(Long id) {
-
+    public void deletar(Boleto boleto) {
     }
+
 
 }

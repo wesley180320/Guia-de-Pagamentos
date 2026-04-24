@@ -2,8 +2,6 @@ package com.gerador.pagamento.controller;
 
 import com.gerador.pagamento.model.Boleto;
 import com.gerador.pagamento.service.BoletoService;
-import com.gerador.pagamento.service.BoletoServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -26,7 +24,7 @@ public class BoletoController {
             @RequestParam Long idCliente,
             @PageableDefault(size = 10) Pageable pageable
     ) {
-        Page<Boleto> page = boletoService.buscaBoletoPorIdCliente(idCliente, pageable);
+        Page<Boleto> page = boletoService.buscaPaginadaPorId(idCliente, pageable);
         return ResponseEntity.ok(page);
     }
 
