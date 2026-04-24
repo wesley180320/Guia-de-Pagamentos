@@ -5,13 +5,14 @@ import com.gerador.pagamento.DTO.LoginResponseDTO;
 import com.gerador.pagamento.model.Cliente;
 import com.gerador.pagamento.security.TokenService;
 import com.gerador.pagamento.service.ClienteService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.validation.BindingResult;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -20,16 +21,23 @@ import javax.validation.Valid;
 @RequestMapping(value = "auth")
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class LoginController {
-    @Autowired
-    ClienteService clienteService;
+
+    private final ClienteService clienteService;
+
+    public LoginController(ClienteService clienteService) {
+        this.clienteService = clienteService;
+    }
+
     @Autowired
     AuthenticationManager authenticationManager;
     @Autowired
     TokenService tokenService;
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @RequestMapping(value = "/cadastro", method = RequestMethod.POST)
     private ResponseEntity<Object> save(@RequestBody @Valid LoginDTO loginDTO) {
-        clienteService.salvarCliente(loginDTO);
+        clienteService.salvar(clienteService.popular(loginDTO));
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

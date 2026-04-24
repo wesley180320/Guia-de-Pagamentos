@@ -16,33 +16,38 @@ import java.time.LocalDate;
 @Service
 public class PdfServiceImpl {
 
-    @Autowired
-    private ClienteRepository clienteRepository;
+    private final ClienteService clienteService;
+    private final BoletoService boletoService;
+    private final RecebedorServiceImpl recebedorService;
 
-    @Autowired
-    private BoletoServiceImpl boletoServiceImpl;
+    public PdfServiceImpl(ClienteService clienteService,
+                          BoletoService boletoService,
+                          RecebedorServiceImpl recebedorService) {
+        this.clienteService = clienteService;
+        this.boletoService = boletoService;
+        this.recebedorService = recebedorService;
+    }
 
-    @Autowired
-    private RecebedorServiceImpl recebedorServiceImpl;
+    public byte[] gerarPdf(PagamentoDTO pagamentoDTO, String cpfCliente) {
+        Cliente clienteValidado = clienteService.validaCpf(cpfCliente);
+        byte[] pdfByte = GerarGuiaImpl.gerarGuiaPdf(pagamentoDTO.getNome(), clienteValidado.getCpf(), clienteValidado.getEndereco(), new BigDecimal(String.valueOf(pagamentoDTO.getValor())), LocalDate.now().plusDays(5), "chave-pix-exemplo", pagamentoDTO.getNome(), pagamentoDTO.getCidade());
+        validarPdf(pdfByte);
+        salvarRecebedor(clienteValidado, pagamentoDTO);
+        salvarBoleto(clienteValidado, pdfByte);
+        return pdfByte;
+    }
 
-    public byte[] gerarPdf(PagamentoDTO pagamentoDTO, Cliente cliente) {
-        cliente = (Cliente) clienteRepository.findByCpf(cliente.getCpf());
-        Boleto boleto = new Boleto();
-        byte[] pdfByte = GerarGuiaImpl.gerarGuiaPdf(pagamentoDTO.getNome(), cliente.getCpf(), cliente.getEndereco(), new BigDecimal(String.valueOf(pagamentoDTO.getValor())), LocalDate.now().plusDays(5), "chave-pix-exemplo", pagamentoDTO.getNome(), pagamentoDTO.getCidade());
+    private void validarPdf(byte[] pdfByte) {
         if (pdfByte == null) {
             throw new ClienteException("Erro ao gerar pdf");
         }
-        try {
-            recebedorServiceImpl.salvarRecebedor(cliente, pagamentoDTO);
-            boleto.setCliente(cliente);
-            boletoServiceImpl.salvar(pdfByte,boleto);
-            return pdfByte;
-        } catch (ConstraintViolationException e) {
-            throw new ClienteException("Erro ao salvar o cliente: violação de constraint", e);
-        } catch (DataAccessException e) {
-            throw new ClienteException("Erro ao salvar o cliente no banco de dados", e);
-        } catch (Exception e) {
-            throw new ClienteException("Erro inesperado ao salvar o cliente", e);
-        }
+    }
+
+    private void salvarRecebedor(Cliente cliente, PagamentoDTO pagamentoDTO) {
+        recebedorService.salvarRecebedor(cliente, pagamentoDTO);
+    }
+
+    private void salvarBoleto(Cliente cliente, byte[] pdfByte) {
+        boletoService.salvar(new Boleto(null, null, cliente, pdfByte));
     }
 }
