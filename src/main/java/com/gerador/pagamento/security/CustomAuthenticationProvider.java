@@ -2,6 +2,7 @@ package com.gerador.pagamento.security;
 
 import com.gerador.pagamento.exception.ClienteException;
 import com.gerador.pagamento.repository.ClienteRepository;
+import com.gerador.pagamento.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -17,28 +18,17 @@ import java.util.ArrayList;
 @Component
 public class CustomAuthenticationProvider implements AuthenticationProvider {
 
-    @Autowired
-    private ClienteRepository clienteRepository;
+    private final AuthenticationService authenticationService;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public CustomAuthenticationProvider(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
+    }
 
     @Override
-    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        String username = authentication.getName();
+    public Authentication authenticate(Authentication authentication) {
+        String cpfCliente = authentication.getName();
         String password = authentication.getCredentials().toString();
-
-        UserDetails usuario = clienteRepository.findByCpf(username);
-
-        if(usuario == null){
-            throw new ClienteException("Cliente não encontrado");
-        }
-
-        if (passwordEncoder.matches(password, usuario.getPassword())) {
-            return new UsernamePasswordAuthenticationToken(usuario, null, new ArrayList<>());
-        }
-
-        throw new BadCredentialsException("Senha incorreta");
+        return authenticationService.validaClienteESenha(cpfCliente, password);
     }
 
     @Override
