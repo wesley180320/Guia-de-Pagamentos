@@ -12,6 +12,7 @@ import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -26,13 +27,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.EnumMap;
 import java.util.Map;
 
-public class GerarGuia {
+public class GerarGuiaImpl {
 
     private static final String TXID = "TX1234567890";
     private static final String OUTPUT_FOLDER = "pdfs";
     private static final String OUTPUT_FILE = OUTPUT_FOLDER + "/guia.pdf";
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
+    @Transactional
     public static byte[] gerarGuiaPdf(
             String cpf,
             String documento,

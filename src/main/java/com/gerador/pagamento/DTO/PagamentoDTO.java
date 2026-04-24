@@ -1,7 +1,5 @@
 package com.gerador.pagamento.DTO;
 
-import com.gerador.pagamento.model.Recebedor;
-
 public class PagamentoDTO {
 
     private String chavePix;
