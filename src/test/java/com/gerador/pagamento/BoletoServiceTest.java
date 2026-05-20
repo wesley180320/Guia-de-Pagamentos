@@ -3,7 +3,6 @@ package com.gerador.pagamento;
 import com.gerador.pagamento.exception.ClienteException;
 import com.gerador.pagamento.model.Boleto;
 import com.gerador.pagamento.repository.BoletoRepository;
-import com.gerador.pagamento.service.BoletoService;
 import com.gerador.pagamento.service.BoletoServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -61,7 +60,7 @@ public class BoletoServiceTest {
         when(boletoRepository.findByClienteIdCliente(idCliente, pageable))
                 .thenReturn(null);
 
-\        ClienteException exception = assertThrows(
+        ClienteException exception = assertThrows(
                 ClienteException.class,
                 () -> boletoService.buscaPaginadaPorId(idCliente, pageable)
         );
