@@ -17,21 +17,19 @@ public class BoletoServiceImpl implements BoletoService {
 
     @Override
     public Page<Boleto> buscaPaginadaPorId(Long idCliente, Pageable pageable) {
-        return boletoRepository.findByClienteIdCliente(idCliente, pageable);
+        Page<Boleto> boletoPage = boletoRepository.findByClienteIdCliente(idCliente, pageable);
+        if( boletoPage == null || boletoPage.isEmpty()){
+            throw new ClienteException("Erro lista de boletos vazia");
+        }
+        return boletoPage;
     }
 
     @Transactional
     @Override
     public void salvar(Boleto boleto) {
         if (boleto.getBoletoByte() == null) {
-            throw new ClienteException("Erro pdfBoleto nullo");
+            throw new ClienteException("Erro Boleto nullo");
         }
         boletoRepository.save(boleto);
     }
-
-    @Override
-    public void deletar(Boleto boleto) {
-    }
-
-
 }
