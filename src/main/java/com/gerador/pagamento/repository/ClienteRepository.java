@@ -11,8 +11,10 @@ import java.util.UUID;
 
 @Repository
 public interface ClienteRepository extends JpaRepository<Cliente, UUID> {
+
     UserDetails findByCpf(String cpf);
 
     @Query("SELECT c FROM Cliente c JOIN FETCH c.recebedor WHERE c.cpf = :cpf")
     Cliente findByClienteComRecebedor(String cpf);
+
 }

@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface BoletoRepository extends JpaRepository<Boleto, Long> {
+
     @Query("SELECT b FROM Boleto b WHERE b.cliente.idCliente = :id")
     Page<Boleto> findByClienteIdCliente(@Param("id") Long id, Pageable pageable);
+
 }

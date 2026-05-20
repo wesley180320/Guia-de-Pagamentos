@@ -2,7 +2,6 @@ package com.gerador.pagamento.service;
 
 import com.gerador.pagamento.exception.ClienteException;
 import com.gerador.pagamento.model.Boleto;
-import com.gerador.pagamento.model.Cliente;
 import com.gerador.pagamento.repository.BoletoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
