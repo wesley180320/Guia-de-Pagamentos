@@ -13,4 +13,5 @@ public enum MetodoHttp {
     public String getNome() {
         return nome;
     }
+
 }

@@ -25,5 +25,4 @@ public class RecebedorServiceImpl {
         clienteLogado.setRecebedor(recebedor);
         recebedorRepository.save(recebedor);
     }
-
 }

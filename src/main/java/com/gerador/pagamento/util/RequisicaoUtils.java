@@ -16,5 +16,4 @@ public class RequisicaoUtils {
         body.put("error", mensagem);
         return ResponseEntity.status(httpStatus.value()).body(body);
     }
-
 }

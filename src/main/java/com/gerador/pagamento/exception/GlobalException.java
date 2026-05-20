@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalException {
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> validationExceptions(MethodArgumentNotValidException ex) {
         return new RequisicaoUtils().retornoRequisicao(HttpStatus.BAD_REQUEST, ex.getFieldError().getDefaultMessage());

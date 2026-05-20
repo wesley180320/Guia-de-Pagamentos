@@ -4,12 +4,7 @@ import com.gerador.pagamento.DTO.PagamentoDTO;
 import com.gerador.pagamento.exception.ClienteException;
 import com.gerador.pagamento.model.Boleto;
 import com.gerador.pagamento.model.Cliente;
-import com.gerador.pagamento.repository.ClienteRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
-
-import javax.validation.ConstraintViolationException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 

@@ -1,6 +1,7 @@
 package com.gerador.pagamento.Util;
 
 public class CPFUtils {
+
     public static String formatarCPF(String cpf) {
         if (cpf == null) return null;
         String numeros = cpf.replaceAll("\\D", "");

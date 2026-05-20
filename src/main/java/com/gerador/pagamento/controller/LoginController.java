@@ -5,16 +5,12 @@ import com.gerador.pagamento.DTO.LoginResponseDTO;
 import com.gerador.pagamento.model.Cliente;
 import com.gerador.pagamento.security.TokenService;
 import com.gerador.pagamento.service.ClienteService;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
 
 @RestController
@@ -23,17 +19,14 @@ import javax.validation.Valid;
 public class LoginController {
 
     private final ClienteService clienteService;
+    private final AuthenticationManager authenticationManager;
+    private final TokenService tokenService;
 
-    public LoginController(ClienteService clienteService) {
+    public LoginController(ClienteService clienteService, AuthenticationManager authenticationManager, TokenService tokenService) {
         this.clienteService = clienteService;
+        this.authenticationManager = authenticationManager;
+        this.tokenService = tokenService;
     }
-
-    @Autowired
-    AuthenticationManager authenticationManager;
-    @Autowired
-    TokenService tokenService;
-    @Autowired
-    PasswordEncoder passwordEncoder;
 
     @RequestMapping(value = "/cadastro", method = RequestMethod.POST)
     private ResponseEntity<Object> save(@RequestBody @Valid LoginDTO loginDTO) {
@@ -48,4 +41,5 @@ public class LoginController {
         String token = tokenService.gerarToken((Cliente) auth.getPrincipal());
         return ResponseEntity.ok().body(new LoginResponseDTO(token));
     }
+
 }

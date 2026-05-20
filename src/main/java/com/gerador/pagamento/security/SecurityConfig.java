@@ -4,7 +4,6 @@ import com.gerador.pagamento.enums.MetodoHttp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,14 +17,12 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-public class  SecurityConfig {
+public class SecurityConfig {
 
     @Autowired
     SecurityFilter securityFilter;
@@ -66,7 +63,6 @@ public class  SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         List<String> listaAcesso = Arrays.asList(MetodoHttp.GET.getNome(), MetodoHttp.POST.getNome(), MetodoHttp.PUT.getNome(), MetodoHttp.DELETE.getNome());
@@ -83,4 +79,5 @@ public class  SecurityConfig {
         source.registerCorsConfiguration("/**", config);
         return source;
     }
+
 }
