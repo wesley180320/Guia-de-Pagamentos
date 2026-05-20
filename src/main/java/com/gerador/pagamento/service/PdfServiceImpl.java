@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Service
-public class PdfServiceImpl {
+public class PdfServiceImpl implements PdfService{
 
     private final ClienteService clienteService;
     private final BoletoService boletoService;
@@ -32,17 +32,17 @@ public class PdfServiceImpl {
         return pdfByte;
     }
 
-    private void validarPdf(byte[] pdfByte) {
+    public void validarPdf(byte[] pdfByte) {
         if (pdfByte == null) {
             throw new ClienteException("Erro ao gerar pdf");
         }
     }
 
-    private void salvarRecebedor(Cliente cliente, PagamentoDTO pagamentoDTO) {
+    public void salvarRecebedor(Cliente cliente, PagamentoDTO pagamentoDTO) {
         recebedorService.salvarRecebedor(cliente, pagamentoDTO);
     }
 
-    private void salvarBoleto(Cliente cliente, byte[] pdfByte) {
+    public void salvarBoleto(Cliente cliente, byte[] pdfByte) {
         boletoService.salvar(new Boleto(null, null, cliente, pdfByte));
     }
 }

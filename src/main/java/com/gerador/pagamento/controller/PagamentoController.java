@@ -2,7 +2,7 @@ package com.gerador.pagamento.controller;
 
 import com.gerador.pagamento.DTO.PagamentoDTO;
 import com.gerador.pagamento.model.Cliente;
-import com.gerador.pagamento.service.PdfServiceImpl;
+import com.gerador.pagamento.service.PdfService;
 import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -16,15 +16,15 @@ import javax.validation.Valid;
 @RequestMapping("/pagamento")
 public class PagamentoController {
 
-    private final PdfServiceImpl PdfServiceImpl;
+    private final PdfService PdfService;
 
-    public PagamentoController(PdfServiceImpl pdfServiceImpl) {
-        PdfServiceImpl = pdfServiceImpl;
+    public PagamentoController(PdfService pdfService) {
+        PdfService = pdfService;
     }
 
     @RequestMapping(value = "/", method = RequestMethod.POST)
     public ResponseEntity<byte[]> save(@RequestBody @Valid PagamentoDTO pagamentoDTO, @Parameter(hidden = true) @AuthenticationPrincipal Cliente cliente) throws Exception {
-        byte[] pdfBytes = PdfServiceImpl.gerarPdf(pagamentoDTO, cliente.getCpf());
+        byte[] pdfBytes = PdfService.gerarPdf(pagamentoDTO, cliente.getCpf());
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=guia.pdf").contentType(MediaType.APPLICATION_PDF).body(pdfBytes);
     }
 
