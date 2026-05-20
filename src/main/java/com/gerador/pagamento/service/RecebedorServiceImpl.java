@@ -1,6 +1,7 @@
 package com.gerador.pagamento.service;
 
 import com.gerador.pagamento.DTO.PagamentoDTO;
+import com.gerador.pagamento.exception.ClienteException;
 import com.gerador.pagamento.model.Cliente;
 import com.gerador.pagamento.model.Recebedor;
 import com.gerador.pagamento.repository.RecebedorRepository;
@@ -16,6 +17,9 @@ public class RecebedorServiceImpl {
 
     @Transactional
     public void salvarRecebedor (Cliente clienteLogado, PagamentoDTO pagamentoDTO){
+        if (clienteLogado == null || pagamentoDTO == null){
+            throw new ClienteException("Erro Cliente ou Pagamento nulo");
+        }
         Recebedor recebedor = new Recebedor();
         recebedor.setCidade(pagamentoDTO.getCidade());
         recebedor.setNome(pagamentoDTO.getNome());
