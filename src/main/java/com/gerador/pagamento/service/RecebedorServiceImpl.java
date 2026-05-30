@@ -20,6 +20,10 @@ public class RecebedorServiceImpl {
         if (clienteLogado == null || pagamentoDTO == null){
             throw new ClienteException("Erro Cliente ou Pagamento nulo");
         }
+        recebedorRepository.save(criarRecebedor(pagamentoDTO, clienteLogado));
+    }
+
+    public Recebedor criarRecebedor(PagamentoDTO pagamentoDTO, Cliente clienteLogado){
         Recebedor recebedor = new Recebedor();
         recebedor.setCidade(pagamentoDTO.getCidade());
         recebedor.setNome(pagamentoDTO.getNome());
@@ -27,6 +31,6 @@ public class RecebedorServiceImpl {
         recebedor.setCliente(clienteLogado);
         recebedor.setChavePix(pagamentoDTO.getChavePix());
         clienteLogado.setRecebedor(recebedor);
-        recebedorRepository.save(recebedor);
+        return recebedor;
     }
 }
