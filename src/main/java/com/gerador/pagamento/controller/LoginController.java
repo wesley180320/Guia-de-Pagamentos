@@ -41,5 +41,4 @@ public class LoginController {
         String token = tokenService.gerarToken((Cliente) auth.getPrincipal());
         return ResponseEntity.ok().body(new LoginResponseDTO(token));
     }
-
 }

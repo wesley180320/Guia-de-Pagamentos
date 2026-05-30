@@ -27,5 +27,4 @@ public class BoletoController {
         Page<Boleto> page = boletoService.buscaPaginadaPorId(idCliente, pageable);
         return ResponseEntity.ok(page);
     }
-
 }

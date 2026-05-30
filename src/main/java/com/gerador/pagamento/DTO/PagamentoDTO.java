@@ -15,5 +15,4 @@ public class PagamentoDTO {
     private String nome;
     private String cidade;
     private Long valor;
-
 }

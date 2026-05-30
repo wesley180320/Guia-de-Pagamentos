@@ -28,5 +28,4 @@ public class GlobalException {
     public ResponseEntity<Map<String, Object>> genericException(Exception ex) {
         return new RequisicaoUtils().retornoRequisicao(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
     }
-
 }

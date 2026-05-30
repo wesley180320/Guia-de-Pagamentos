@@ -26,5 +26,4 @@ public class Recebedor {
 
     @OneToOne(mappedBy = "recebedor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Cliente cliente;
-
 }

@@ -19,5 +19,4 @@ public class LoginDTO {
 
     @NotBlank(message = "A senha é obrigatório")
     private String senha;
-
 }

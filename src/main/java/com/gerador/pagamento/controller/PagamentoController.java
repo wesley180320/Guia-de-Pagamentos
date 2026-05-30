@@ -27,5 +27,4 @@ public class PagamentoController {
         byte[] pdfBytes = PdfService.gerarPdf(pagamentoDTO, cliente.getCpf());
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=guia.pdf").contentType(MediaType.APPLICATION_PDF).body(pdfBytes);
     }
-
 }

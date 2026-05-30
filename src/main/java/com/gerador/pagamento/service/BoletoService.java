@@ -6,7 +6,5 @@ import org.springframework.data.domain.Pageable;
 public interface BoletoService {
 
     void salvar(Boleto boleto);
-    void deletar(Boleto boleto);
     Page<Boleto> buscaPaginadaPorId(Long id, Pageable pageable);
-
 }

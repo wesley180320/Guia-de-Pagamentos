@@ -32,5 +32,4 @@ public class AuthenticationService {
         }
         throw new BadCredentialsException("Senha incorreta");
     }
-
 }

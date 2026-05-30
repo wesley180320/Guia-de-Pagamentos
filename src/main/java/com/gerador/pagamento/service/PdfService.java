@@ -9,5 +9,4 @@ public interface PdfService {
     void validarPdf(byte[] pdfByte);
     void salvarRecebedor(Cliente cliente, PagamentoDTO pagamentoDTO);
     void salvarBoleto(Cliente cliente, byte[] pdfByte);
-
 }

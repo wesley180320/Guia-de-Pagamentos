@@ -27,5 +27,4 @@ public class Boleto {
     @Lob
     @Column(name = "boleto", columnDefinition = "BLOB")
     private byte[] boletoByte;
-
 }

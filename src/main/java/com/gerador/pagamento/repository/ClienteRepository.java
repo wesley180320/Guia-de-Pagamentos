@@ -16,5 +16,4 @@ public interface ClienteRepository extends JpaRepository<Cliente, UUID> {
 
     @Query("SELECT c FROM Cliente c JOIN FETCH c.recebedor WHERE c.cpf = :cpf")
     Cliente findByClienteComRecebedor(String cpf);
-
 }

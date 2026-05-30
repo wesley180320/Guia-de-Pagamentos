@@ -11,5 +11,4 @@ public interface BoletoRepository extends JpaRepository<Boleto, Long> {
 
     @Query("SELECT b FROM Boleto b WHERE b.cliente.idCliente = :id")
     Page<Boleto> findByClienteIdCliente(@Param("id") Long id, Pageable pageable);
-
 }

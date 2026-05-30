@@ -46,7 +46,6 @@ public class BoletoServiceTest {
 
         assertEquals("Erro lista de boletos vazia", exception.getMessage());
 
-
         verify(boletoRepository, times(1))
                 .findByClienteIdCliente(idCliente, pageable);
     }
