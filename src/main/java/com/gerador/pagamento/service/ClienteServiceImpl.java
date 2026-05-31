@@ -1,6 +1,6 @@
 package com.gerador.pagamento.service;
 
-import com.gerador.pagamento.DTO.LoginDTO;
+import com.gerador.pagamento.DTO.ClienteDTO;
 import com.gerador.pagamento.exception.ClienteException;
 import com.gerador.pagamento.model.Cliente;
 import com.gerador.pagamento.repository.ClienteRepository;
@@ -29,9 +29,9 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
     @Override
-    public Cliente popular(LoginDTO loginDTO) {
+    public Cliente popular(ClienteDTO ClienteDTO) {
         Cliente cliente = new Cliente();
-        BeanUtils.copyProperties(loginDTO, cliente);
+        BeanUtils.copyProperties(ClienteDTO, cliente);
         cliente.setSenha(passwordEncoder.encode(cliente.getSenha()));
         return cliente;
     }

@@ -11,7 +11,7 @@ import javax.validation.constraints.NotBlank;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginDTO {
+public class ClienteDTO {
 
     @CPF(message = "CPF inválido")
     @NotBlank(message = "O CPF é obrigatório")

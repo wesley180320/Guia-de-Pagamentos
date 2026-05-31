@@ -1,7 +1,7 @@
 package com.gerador.pagamento.controller;
 
-import com.gerador.pagamento.DTO.LoginDTO;
-import com.gerador.pagamento.DTO.LoginResponseDTO;
+import com.gerador.pagamento.DTO.ClienteDTO;
+import com.gerador.pagamento.DTO.ClienteRespondeDTO;
 import com.gerador.pagamento.model.Cliente;
 import com.gerador.pagamento.security.TokenService;
 import com.gerador.pagamento.service.ClienteService;
@@ -29,16 +29,16 @@ public class LoginController {
     }
 
     @RequestMapping(value = "/cadastro", method = RequestMethod.POST)
-    private ResponseEntity<Object> save(@RequestBody @Valid LoginDTO loginDTO) {
-        clienteService.salvar(clienteService.popular(loginDTO));
+    private ResponseEntity<Object> save(@RequestBody @Valid ClienteDTO ClienteDTO) {
+        clienteService.salvar(clienteService.popular(ClienteDTO));
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/login")
-    private ResponseEntity<LoginResponseDTO> login(@RequestBody LoginDTO loginDTO) {
-        UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken(loginDTO.getCpf(), loginDTO.getSenha());
+    private ResponseEntity<ClienteRespondeDTO> login(@RequestBody ClienteDTO ClienteDTO) {
+        UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken(ClienteDTO.getCpf(), ClienteDTO.getSenha());
         Authentication auth = this.authenticationManager.authenticate(usernamePassword);
         String token = tokenService.gerarToken((Cliente) auth.getPrincipal());
-        return ResponseEntity.ok().body(new LoginResponseDTO(token));
+        return ResponseEntity.ok().body(new ClienteRespondeDTO(token));
     }
 }
