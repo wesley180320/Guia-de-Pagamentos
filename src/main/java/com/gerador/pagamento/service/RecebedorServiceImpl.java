@@ -10,19 +10,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class RecebedorServiceImpl {
+public class RecebedorServiceImpl implements RecebedorService{
 
     @Autowired
     private RecebedorRepository recebedorRepository;
 
     @Transactional
-    public void salvarRecebedor (Cliente clienteLogado, PagamentoDTO pagamentoDTO){
+    @Override
+    public void salvarRecebedor(Cliente clienteLogado, PagamentoDTO pagamentoDTO) {
         if (clienteLogado == null || pagamentoDTO == null){
             throw new ClienteException("Erro Cliente ou Pagamento nulo");
         }
         recebedorRepository.save(criarRecebedor(pagamentoDTO, clienteLogado));
     }
 
+    @Override
     public Recebedor criarRecebedor(PagamentoDTO pagamentoDTO, Cliente clienteLogado){
         Recebedor recebedor = new Recebedor();
         recebedor.setCidade(pagamentoDTO.getCidade());

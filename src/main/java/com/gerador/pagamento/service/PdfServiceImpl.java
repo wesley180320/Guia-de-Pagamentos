@@ -13,11 +13,11 @@ public class PdfServiceImpl implements PdfService{
 
     private final ClienteService clienteService;
     private final BoletoService boletoService;
-    private final RecebedorServiceImpl recebedorService;
+    private final RecebedorService recebedorService;
 
     public PdfServiceImpl(ClienteService clienteService,
                           BoletoService boletoService,
-                          RecebedorServiceImpl recebedorService) {
+                          RecebedorService recebedorService) {
         this.clienteService = clienteService;
         this.boletoService = boletoService;
         this.recebedorService = recebedorService;
