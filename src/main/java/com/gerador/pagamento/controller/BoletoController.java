@@ -20,7 +20,7 @@ public class BoletoController {
     }
 
     @GetMapping("/consulta/")
-    public ResponseEntity<Page<Boleto>> buscarBoletoPorId(
+    public ResponseEntity<Page<Boleto>> buscaPaginadaBoletoPorId(
             @RequestParam Long idCliente,
             @PageableDefault(size = 10) Pageable pageable
     ) {

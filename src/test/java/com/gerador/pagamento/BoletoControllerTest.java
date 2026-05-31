@@ -44,7 +44,7 @@ class BoletoControllerTest {
     }
 
     @Test
-    void deveBuscarBoletoPorIdComSucesso() {
+    void deveBuscarPaginadaBoletoPorIdComSucesso() {
 
         Long idCliente = 1L;
 
@@ -52,7 +52,7 @@ class BoletoControllerTest {
                 .thenReturn(boletoPage);
 
         ResponseEntity<Page<Boleto>> response =
-                boletoController.buscarBoletoPorId(idCliente, pageable);
+                boletoController.buscaPaginadaBoletoPorId(idCliente, pageable);
 
         assertNotNull(response);
         assertEquals(200, response.getStatusCodeValue());
